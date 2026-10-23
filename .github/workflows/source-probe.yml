@@ -2,7 +2,9 @@ name: source probe
 
 # Manual only. Checks from a runner whether the JSON advisory source answers
 # and how fast: page 1 of both lists, one detail of each, then 30 more paced
-# calls; reports latency, any HTTP 567 and other non-200 answers. Stores nothing.
+# calls; reports latency, any HTTP 567 and other non-200 answers. Mode `dates`
+# instead prints the date fields of page 1 of both lists, which date the order
+# follows, and one advisory's detail dates. Stores nothing.
 # Set the repository secret SOURCE_BASE to the source's API base URL
 # (Settings → Secrets and variables → Actions → Secrets); it is masked in every log.
 on:
@@ -12,6 +14,10 @@ on:
         description: "seconds between requests"
         required: false
         default: "1"
+      mode:
+        description: "calls (default) or dates"
+        required: false
+        default: ""
 
 jobs:
   probe:
@@ -28,6 +34,7 @@ jobs:
         env:
           BASE: ${{ secrets.SOURCE_BASE }}
           PACE: ${{ inputs.pace }}
+          MODE: ${{ inputs.mode }}
         run: |
           chmod +x bin/source-probe
           sha256sum bin/source-probe
